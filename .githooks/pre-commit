@@ -1,0 +1,11 @@
+#!/bin/sh
+set -eu
+
+repo_root="$(git rev-parse --show-toplevel)"
+solution_path="$repo_root/Peace.Codebank.sln"
+
+echo "[pre-commit] dotnet build"
+dotnet build "$solution_path" --nologo --verbosity quiet
+
+echo "[pre-commit] dotnet test"
+dotnet test "$solution_path" --no-build --nologo --verbosity quiet

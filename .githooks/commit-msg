@@ -1,0 +1,13 @@
+#!/bin/sh
+set -eu
+
+commit_message_file="$1"
+first_line="$(head -n 1 "$commit_message_file" | tr -d '\r')"
+pattern='^(feat|fix|refactor|docs|test|build|ci|style|chore|perf)(\([a-z0-9][a-z0-9.-]*\))?!?: .{1,72}$'
+
+if ! printf '%s' "$first_line" | grep -Eq "$pattern"; then
+    echo "[commit-msg] 커밋 메시지 형식이 올바르지 않습니다."
+    echo "[commit-msg] 허용 형식: <type>(<scope>): <subject>"
+    echo "[commit-msg] 예시: feat(chart-color-service): 색상 생성 로직 보완"
+    exit 1
+fi

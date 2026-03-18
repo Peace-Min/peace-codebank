@@ -1,0 +1,45 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TestApp", "TestApp", "{71BF07C5-17F7-40D8-A5FE-8CFBEF048A91}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Peace.Codebank.Tests", "TestApp\Peace.Codebank.Tests\Peace.Codebank.Tests.csproj", "{FF7E5209-9F2B-4E56-85B0-B2E69A288909}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Codebank", "Codebank", "{5F479813-EA18-4F22-A4E7-A37E0DBF0249}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Peace.Codebank", "Codebank\Peace.Codebank.csproj", "{FB74BC26-C3F9-4476-8C98-97B592B678A1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Meta", "Meta", "{4AE558A3-6B4E-4967-8C23-DF62EAD47C0B}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		AGENTS.md = AGENTS.md
+		README.md = README.md
+		docs\COMMIT_CONVENTION.md = docs\COMMIT_CONVENTION.md
+		docs\MODULE_GUIDE.md = docs\MODULE_GUIDE.md
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FF7E5209-9F2B-4E56-85B0-B2E69A288909}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FF7E5209-9F2B-4E56-85B0-B2E69A288909}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FF7E5209-9F2B-4E56-85B0-B2E69A288909}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FF7E5209-9F2B-4E56-85B0-B2E69A288909}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FB74BC26-C3F9-4476-8C98-97B592B678A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FB74BC26-C3F9-4476-8C98-97B592B678A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FB74BC26-C3F9-4476-8C98-97B592B678A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FB74BC26-C3F9-4476-8C98-97B592B678A1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{FF7E5209-9F2B-4E56-85B0-B2E69A288909} = {71BF07C5-17F7-40D8-A5FE-8CFBEF048A91}
+		{FB74BC26-C3F9-4476-8C98-97B592B678A1} = {5F479813-EA18-4F22-A4E7-A37E0DBF0249}
+	EndGlobalSection
+EndGlobal

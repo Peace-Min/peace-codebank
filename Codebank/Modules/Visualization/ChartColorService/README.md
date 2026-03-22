@@ -13,6 +13,7 @@
 
 ## 참고 사항
 
+- 첫 등록 색상은 `#FFF21818`이다.
 - 이미 사용 중인 색상 목록을 `GenerateUniqueColor`에 전달한다.
 - 같은 인스턴스를 계속 사용하면 색상 순서가 일정하게 이어진다.
-- `IColoredItem`은 `DisplayColor` 읽기 속성만 필요하다.
+- `IColoredItem`은 `Color` 읽기 속성만 필요하다.

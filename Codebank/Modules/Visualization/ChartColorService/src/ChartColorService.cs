@@ -11,12 +11,19 @@ public sealed class ChartColorService
     private const int MaxRetryAttempts = 10;
     private const double DefaultSaturation = 0.8;
     private const double DefaultBrightness = 0.6;
+    private static readonly Color FirstRegisteredColor = Color.FromArgb(255, 242, 24, 24);
 
     private double _hueStep;
 
     public Color GenerateUniqueColor(IEnumerable<IColoredItem>? existingItems)
     {
         var usedColors = GetUsedColors(existingItems);
+
+        if (usedColors.Count == 0)
+        {
+            return FirstRegisteredColor;
+        }
+
         var attemptCount = 0;
         var candidate = Color.Empty;
 
@@ -47,9 +54,9 @@ public sealed class ChartColorService
                 continue;
             }
 
-            if (!item.DisplayColor.IsEmpty)
+            if (!item.Color.IsEmpty)
             {
-                usedColors.Add(item.DisplayColor);
+                usedColors.Add(item.Color);
             }
         }
 

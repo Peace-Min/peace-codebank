@@ -8,13 +8,13 @@ namespace Peace.Codebank.Tests.Visualization.Charting;
 public class ChartColorServiceTests
 {
     [Fact]
-    public void GenerateUniqueColorReturnsColorWhenExistingItemsAreNull()
+    public void GenerateUniqueColorReturnsFirstRegisteredColorWhenExistingItemsAreNull()
     {
         var service = new ChartColorService();
 
         var color = service.GenerateUniqueColor(null);
 
-        color.IsEmpty.Should().BeFalse();
+        color.Should().Be(Color.FromArgb(255, 242, 24, 24));
     }
 
     [Fact]
@@ -27,6 +27,16 @@ public class ChartColorServiceTests
         var actual = actualService.GenerateUniqueColor(new[] { new TestColoredItem(Color.Empty) });
 
         actual.Should().Be(expected);
+    }
+
+    [Fact]
+    public void GenerateUniqueColorReturnsFirstRegisteredColorWhenExistingItemsAreEmpty()
+    {
+        var service = new ChartColorService();
+
+        var color = service.GenerateUniqueColor(Array.Empty<IColoredItem>());
+
+        color.Should().Be(Color.FromArgb(255, 242, 24, 24));
     }
 
     [Fact]
@@ -54,16 +64,16 @@ public class ChartColorServiceTests
             items.Add(new TestColoredItem(color));
         }
 
-        items.Should().OnlyHaveUniqueItems(item => item.DisplayColor.ToArgb());
+        items.Should().OnlyHaveUniqueItems(item => item.Color.ToArgb());
     }
 
     private sealed class TestColoredItem : IColoredItem
     {
-        public TestColoredItem(Color displayColor)
+        public TestColoredItem(Color color)
         {
-            DisplayColor = displayColor;
+            Color = color;
         }
 
-        public Color DisplayColor { get; }
+        public Color Color { get; }
     }
 }

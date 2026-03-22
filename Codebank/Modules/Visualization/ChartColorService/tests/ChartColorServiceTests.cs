@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using System.Drawing;
+using System.Windows.Media;
 using FluentAssertions;
 using Peace.Codebank.Visualization.Charting;
 
@@ -24,7 +24,7 @@ public class ChartColorServiceTests
         var actualService = new ChartColorService();
 
         var expected = expectedService.GenerateUniqueColor(Array.Empty<IColoredItem>());
-        var actual = actualService.GenerateUniqueColor(new[] { new TestColoredItem(Color.Empty) });
+        var actual = actualService.GenerateUniqueColor(new[] { new TestColoredItem(default(Color)) });
 
         actual.Should().Be(expected);
     }
@@ -49,7 +49,7 @@ public class ChartColorServiceTests
         var actual = service.GenerateUniqueColor(new[] { new TestColoredItem(firstCandidate) });
 
         actual.Should().NotBe(firstCandidate);
-        actual.IsEmpty.Should().BeFalse();
+        actual.Should().NotBe(default(Color));
     }
 
     [Fact]
@@ -64,7 +64,7 @@ public class ChartColorServiceTests
             items.Add(new TestColoredItem(color));
         }
 
-        items.Should().OnlyHaveUniqueItems(item => item.Color.ToArgb());
+        items.Should().OnlyHaveUniqueItems(item => ToArgb(item.Color));
     }
 
     private sealed class TestColoredItem : IColoredItem
@@ -75,5 +75,14 @@ public class ChartColorServiceTests
         }
 
         public Color Color { get; }
+    }
+
+    private static int ToArgb(Color color)
+    {
+        return
+            (color.A << 24) |
+            (color.R << 16) |
+            (color.G << 8) |
+            color.B;
     }
 }

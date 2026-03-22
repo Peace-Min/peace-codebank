@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Drawing;
+using System.Windows.Media;
 
 namespace Peace.Codebank.Visualization.Charting;
 
@@ -25,7 +25,7 @@ public sealed class ChartColorService
         }
 
         var attemptCount = 0;
-        var candidate = Color.Empty;
+        var candidate = default(Color);
 
         do
         {
@@ -54,7 +54,7 @@ public sealed class ChartColorService
                 continue;
             }
 
-            if (!item.Color.IsEmpty)
+            if (!IsEmpty(item.Color))
             {
                 usedColors.Add(item.Color);
             }
@@ -86,15 +86,20 @@ public sealed class ChartColorService
         return false;
     }
 
+    private static bool IsEmpty(Color color)
+    {
+        return color == default(Color);
+    }
+
     private static Color CreateColorFromHsv(double hue, double saturation, double brightness)
     {
         var segment = Convert.ToInt32(System.Math.Floor(hue / 60.0)) % 6;
         var fractional = hue / 60.0 - System.Math.Floor(hue / 60.0);
 
-        var value = Convert.ToInt32(brightness * 255.0);
-        var p = Convert.ToInt32(brightness * 255.0 * (1.0 - saturation));
-        var q = Convert.ToInt32(brightness * 255.0 * (1.0 - fractional * saturation));
-        var t = Convert.ToInt32(brightness * 255.0 * (1.0 - (1.0 - fractional) * saturation));
+        var value = ToByte(brightness * 255.0);
+        var p = ToByte(brightness * 255.0 * (1.0 - saturation));
+        var q = ToByte(brightness * 255.0 * (1.0 - fractional * saturation));
+        var t = ToByte(brightness * 255.0 * (1.0 - (1.0 - fractional) * saturation));
 
         switch (segment)
         {
@@ -111,5 +116,10 @@ public sealed class ChartColorService
             default:
                 return Color.FromArgb(255, value, p, q);
         }
+    }
+
+    private static byte ToByte(double value)
+    {
+        return Convert.ToByte(Convert.ToInt32(value));
     }
 }

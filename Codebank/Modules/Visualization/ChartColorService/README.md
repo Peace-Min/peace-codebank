@@ -8,8 +8,8 @@
 
 ## 의존성
 
-- `System.Drawing.Color`를 사용한다.
-- 저장소 기준으로는 추가 NuGet 패키지가 필요하지 않다.
+- `System.Windows.Media.Color`를 사용한다.
+- .NET 8 대상은 WPF 참조를 위해 `net8.0-windows`를 사용한다.
 
 ## 참고 사항
 

@@ -53,18 +53,53 @@ public class ChartColorServiceTests
     }
 
     [Fact]
-    public void GenerateUniqueColorProducesDistinctColorsForRepeatedAdditions()
+    public void GenerateUniqueColorProducesDistinctColorsForFirstElevenAdditions()
     {
         var service = new ChartColorService();
         var items = new List<IColoredItem>();
 
-        for (var i = 0; i < 5; i++)
+        for (var i = 0; i < 11; i++)
         {
             var color = service.GenerateUniqueColor(items);
             items.Add(new TestColoredItem(color));
         }
 
         items.Should().OnlyHaveUniqueItems(item => ToArgb(item.Color));
+    }
+
+    [Fact]
+    public void GenerateUniqueColorKeepsUsingPreferredColorsWhenAUserDefinedColorExists()
+    {
+        var service = new ChartColorService();
+        var items = new List<IColoredItem>
+        {
+            new TestColoredItem(service.GenerateUniqueColor(null)),
+            new TestColoredItem(Color.FromArgb(255, 34, 34, 34)),
+        };
+
+        while (items.Count < 11)
+        {
+            var color = service.GenerateUniqueColor(items);
+            items.Add(new TestColoredItem(color));
+        }
+
+        items.Should().OnlyHaveUniqueItems(item => ToArgb(item.Color));
+    }
+
+    [Fact]
+    public void GenerateUniqueColorFallsBackAfterPreferredColorsAreExhausted()
+    {
+        var service = new ChartColorService();
+        var items = new List<IColoredItem>();
+
+        for (var i = 0; i < 12; i++)
+        {
+            var color = service.GenerateUniqueColor(items);
+            items.Add(new TestColoredItem(color));
+        }
+
+        items.Should().OnlyHaveUniqueItems(item => ToArgb(item.Color));
+        items[11].Color.Should().NotBe(default(Color));
     }
 
     private sealed class TestColoredItem : IColoredItem

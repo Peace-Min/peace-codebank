@@ -12,6 +12,20 @@ public sealed class ChartColorService
     private const double DefaultSaturation = 0.8;
     private const double DefaultBrightness = 0.6;
     private static readonly Color FirstRegisteredColor = Color.FromArgb(255, 242, 24, 24);
+    private static readonly Color[] PreferredColors =
+    {
+        FirstRegisteredColor,
+        CreateColorFromHsv(28.0, 0.82, 0.96),
+        CreateColorFromHsv(48.0, 0.80, 0.95),
+        CreateColorFromHsv(84.0, 0.68, 0.84),
+        CreateColorFromHsv(124.0, 0.68, 0.73),
+        CreateColorFromHsv(164.0, 0.74, 0.78),
+        CreateColorFromHsv(196.0, 0.78, 0.90),
+        CreateColorFromHsv(224.0, 0.72, 0.92),
+        CreateColorFromHsv(256.0, 0.66, 0.86),
+        CreateColorFromHsv(288.0, 0.69, 0.84),
+        CreateColorFromHsv(326.0, 0.76, 0.90),
+    };
 
     private double _hueStep;
 
@@ -24,6 +38,18 @@ public sealed class ChartColorService
             return FirstRegisteredColor;
         }
 
+        var preferredColor = FindPreferredColor(usedColors);
+
+        if (!IsEmpty(preferredColor))
+        {
+            return preferredColor;
+        }
+
+        return GenerateFallbackColor(usedColors);
+    }
+
+    private Color GenerateFallbackColor(IList<Color> usedColors)
+    {
         var attemptCount = 0;
         var candidate = default(Color);
 
@@ -36,6 +62,30 @@ public sealed class ChartColorService
         while (attemptCount < MaxRetryAttempts && IsTooSimilar(candidate, usedColors));
 
         return candidate;
+    }
+
+    private static Color FindPreferredColor(IList<Color> usedColors)
+    {
+        var bestCandidate = default(Color);
+        var bestScore = int.MinValue;
+
+        foreach (var candidate in PreferredColors)
+        {
+            if (ContainsExactColor(candidate, usedColors))
+            {
+                continue;
+            }
+
+            var score = GetMinimumDistance(candidate, usedColors);
+
+            if (score > bestScore)
+            {
+                bestCandidate = candidate;
+                bestScore = score;
+            }
+        }
+
+        return bestCandidate;
     }
 
     private static List<Color> GetUsedColors(IEnumerable<IColoredItem>? existingItems)
@@ -65,25 +115,50 @@ public sealed class ChartColorService
 
     private static bool IsTooSimilar(Color candidate, IList<Color> usedColors)
     {
-        if (usedColors.Count == 0)
-        {
-            return false;
-        }
+        return GetMinimumDistance(candidate, usedColors) < ColorSimilarityThreshold;
+    }
 
+    private static bool ContainsExactColor(Color candidate, IList<Color> usedColors)
+    {
         foreach (var usedColor in usedColors)
         {
-            var distance =
-                System.Math.Abs(usedColor.R - candidate.R) +
-                System.Math.Abs(usedColor.G - candidate.G) +
-                System.Math.Abs(usedColor.B - candidate.B);
-
-            if (distance < ColorSimilarityThreshold)
+            if (ToArgb(usedColor) == ToArgb(candidate))
             {
                 return true;
             }
         }
 
         return false;
+    }
+
+    private static int GetMinimumDistance(Color candidate, IList<Color> usedColors)
+    {
+        if (usedColors.Count == 0)
+        {
+            return int.MaxValue;
+        }
+
+        var minimumDistance = int.MaxValue;
+
+        foreach (var usedColor in usedColors)
+        {
+            var distance = GetDistance(candidate, usedColor);
+
+            if (distance < minimumDistance)
+            {
+                minimumDistance = distance;
+            }
+        }
+
+        return minimumDistance;
+    }
+
+    private static int GetDistance(Color left, Color right)
+    {
+        return
+            System.Math.Abs(left.R - right.R) +
+            System.Math.Abs(left.G - right.G) +
+            System.Math.Abs(left.B - right.B);
     }
 
     private static bool IsEmpty(Color color)
@@ -121,5 +196,14 @@ public sealed class ChartColorService
     private static byte ToByte(double value)
     {
         return Convert.ToByte(Convert.ToInt32(value));
+    }
+
+    private static int ToArgb(Color color)
+    {
+        return
+            (color.A << 24) |
+            (color.R << 16) |
+            (color.G << 8) |
+            color.B;
     }
 }

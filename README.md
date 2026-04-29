@@ -20,9 +20,11 @@
 `Peace.Codebank` 프로젝트는 모듈 소스를 정리해서 보여 주는 역할을 한다.
 `Peace.Codebank.Tests` 프로젝트는 모듈 테스트를 실행하는 검증용 프로젝트다.
 실제 재사용은 각 모듈의 `src` 폴더에서 필요한 파일만 복사해서 가져가는 방식으로 진행한다.
+일부 모듈 테스트는 `TestResults` 아래에 확인용 산출물을 남길 수 있으며, 이 경로는 Git에 포함하지 않는다.
 
 ## 현재 포함된 모듈
 
+- `Diagnostics/HtmlComparisonLogService`: 두 집합을 비교해서 HTML 로그 파일로 저장하는 범용 비교 로직.
 - `Visualization/ChartColorService`: 차트 항목에 서로 다른 색상을 할당하기 위한 로직.
 
 ## 일반 작업 순서

@@ -11,38 +11,30 @@ public sealed class ChartColorService
     private const int MaxRetryAttempts = 10;
     private const double DefaultSaturation = 0.8;
     private const double DefaultBrightness = 0.6;
-    private static readonly Color FirstRegisteredColor = Color.FromArgb(255, 242, 24, 24);
-    private static readonly Color[] PreferredColors =
+    private static readonly Color[] FixedColors =
     {
-        FirstRegisteredColor,
-        CreateColorFromHsv(28.0, 0.82, 0.96),
-        CreateColorFromHsv(48.0, 0.80, 0.95),
-        CreateColorFromHsv(84.0, 0.68, 0.84),
-        CreateColorFromHsv(124.0, 0.68, 0.73),
-        CreateColorFromHsv(164.0, 0.74, 0.78),
-        CreateColorFromHsv(196.0, 0.78, 0.90),
-        CreateColorFromHsv(224.0, 0.72, 0.92),
-        CreateColorFromHsv(256.0, 0.66, 0.86),
-        CreateColorFromHsv(288.0, 0.69, 0.84),
-        CreateColorFromHsv(326.0, 0.76, 0.90),
+        Color.FromArgb(255, 242, 24, 24), // 0: 빨강.
+        Color.FromArgb(255, 245, 124, 0), // 1: 주황.
+        Color.FromArgb(255, 255, 179, 0), // 2: 노랑.
+        Color.FromArgb(255, 255, 235, 59), // 3: 연노랑.
+        Color.FromArgb(255, 124, 179, 66), // 4: 연두.
+        Color.FromArgb(255, 0, 137, 123), // 5: 청록.
+        Color.FromArgb(255, 3, 155, 229), // 6: 하늘.
+        Color.FromArgb(255, 30, 136, 229), // 7: 파랑.
+        Color.FromArgb(255, 57, 73, 171), // 8: 남색.
+        Color.FromArgb(255, 142, 36, 170), // 9: 보라.
     };
 
     private double _hueStep;
 
     public Color GenerateUniqueColor(IEnumerable<IColoredItem>? existingItems)
     {
+        var existingItemCount = GetExistingItemCount(existingItems);
         var usedColors = GetUsedColors(existingItems);
 
-        if (usedColors.Count == 0)
+        if (existingItemCount < FixedColors.Length)
         {
-            return FirstRegisteredColor;
-        }
-
-        var preferredColor = FindPreferredColor(usedColors);
-
-        if (!IsEmpty(preferredColor))
-        {
-            return preferredColor;
+            return FixedColors[existingItemCount];
         }
 
         return GenerateFallbackColor(usedColors);
@@ -64,28 +56,21 @@ public sealed class ChartColorService
         return candidate;
     }
 
-    private static Color FindPreferredColor(IList<Color> usedColors)
+    private static int GetExistingItemCount(IEnumerable<IColoredItem>? existingItems)
     {
-        var bestCandidate = default(Color);
-        var bestScore = int.MinValue;
-
-        foreach (var candidate in PreferredColors)
+        if (existingItems is null)
         {
-            if (ContainsExactColor(candidate, usedColors))
-            {
-                continue;
-            }
-
-            var score = GetMinimumDistance(candidate, usedColors);
-
-            if (score > bestScore)
-            {
-                bestCandidate = candidate;
-                bestScore = score;
-            }
+            return 0;
         }
 
-        return bestCandidate;
+        var count = 0;
+
+        foreach (var item in existingItems)
+        {
+            count++;
+        }
+
+        return count;
     }
 
     private static List<Color> GetUsedColors(IEnumerable<IColoredItem>? existingItems)
@@ -116,19 +101,6 @@ public sealed class ChartColorService
     private static bool IsTooSimilar(Color candidate, IList<Color> usedColors)
     {
         return GetMinimumDistance(candidate, usedColors) < ColorSimilarityThreshold;
-    }
-
-    private static bool ContainsExactColor(Color candidate, IList<Color> usedColors)
-    {
-        foreach (var usedColor in usedColors)
-        {
-            if (ToArgb(usedColor) == ToArgb(candidate))
-            {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     private static int GetMinimumDistance(Color candidate, IList<Color> usedColors)

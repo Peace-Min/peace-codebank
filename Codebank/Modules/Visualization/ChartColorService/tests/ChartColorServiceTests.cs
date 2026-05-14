@@ -7,6 +7,20 @@ namespace Peace.Codebank.Tests.Visualization.Charting;
 
 public class ChartColorServiceTests
 {
+    private static readonly Color[] FixedColors =
+    {
+        Color.FromArgb(255, 242, 24, 24),
+        Color.FromArgb(255, 245, 124, 0),
+        Color.FromArgb(255, 255, 179, 0),
+        Color.FromArgb(255, 255, 235, 59),
+        Color.FromArgb(255, 124, 179, 66),
+        Color.FromArgb(255, 0, 137, 123),
+        Color.FromArgb(255, 3, 155, 229),
+        Color.FromArgb(255, 30, 136, 229),
+        Color.FromArgb(255, 57, 73, 171),
+        Color.FromArgb(255, 142, 36, 170),
+    };
+
     [Fact]
     public void GenerateUniqueColorReturnsFirstRegisteredColorWhenExistingItemsAreNull()
     {
@@ -14,19 +28,17 @@ public class ChartColorServiceTests
 
         var color = service.GenerateUniqueColor(null);
 
-        color.Should().Be(Color.FromArgb(255, 242, 24, 24));
+        color.Should().Be(FixedColors[0]);
     }
 
     [Fact]
-    public void GenerateUniqueColorIgnoresEmptyExistingColors()
+    public void GenerateUniqueColorUsesExistingItemCountEvenWhenColorIsEmpty()
     {
-        var expectedService = new ChartColorService();
-        var actualService = new ChartColorService();
+        var service = new ChartColorService();
 
-        var expected = expectedService.GenerateUniqueColor(Array.Empty<IColoredItem>());
-        var actual = actualService.GenerateUniqueColor(new[] { new TestColoredItem(default(Color)) });
+        var actual = service.GenerateUniqueColor(new[] { new TestColoredItem(default(Color)) });
 
-        actual.Should().Be(expected);
+        actual.Should().Be(FixedColors[1]);
     }
 
     [Fact]
@@ -36,70 +48,37 @@ public class ChartColorServiceTests
 
         var color = service.GenerateUniqueColor(Array.Empty<IColoredItem>());
 
-        color.Should().Be(Color.FromArgb(255, 242, 24, 24));
+        color.Should().Be(FixedColors[0]);
     }
 
     [Fact]
-    public void GenerateUniqueColorRetriesWhenFirstCandidateIsAlreadyUsed()
-    {
-        var seedService = new ChartColorService();
-        var service = new ChartColorService();
-        var firstCandidate = seedService.GenerateUniqueColor(Array.Empty<IColoredItem>());
-
-        var actual = service.GenerateUniqueColor(new[] { new TestColoredItem(firstCandidate) });
-
-        actual.Should().NotBe(firstCandidate);
-        actual.Should().NotBe(default(Color));
-    }
-
-    [Fact]
-    public void GenerateUniqueColorProducesDistinctColorsForFirstElevenAdditions()
+    public void GenerateUniqueColorReturnsFixedColorsForFirstTenAdditions()
     {
         var service = new ChartColorService();
         var items = new List<IColoredItem>();
 
-        for (var i = 0; i < 11; i++)
+        for (var i = 0; i < FixedColors.Length; i++)
         {
-            var color = service.GenerateUniqueColor(items);
-            items.Add(new TestColoredItem(color));
+            var actual = service.GenerateUniqueColor(items);
+            actual.Should().Be(FixedColors[i]);
+            items.Add(new TestColoredItem(actual));
         }
-
-        items.Should().OnlyHaveUniqueItems(item => ToArgb(item.Color));
     }
 
     [Fact]
-    public void GenerateUniqueColorKeepsUsingPreferredColorsWhenAUserDefinedColorExists()
-    {
-        var service = new ChartColorService();
-        var items = new List<IColoredItem>
-        {
-            new TestColoredItem(service.GenerateUniqueColor(null)),
-            new TestColoredItem(Color.FromArgb(255, 34, 34, 34)),
-        };
-
-        while (items.Count < 11)
-        {
-            var color = service.GenerateUniqueColor(items);
-            items.Add(new TestColoredItem(color));
-        }
-
-        items.Should().OnlyHaveUniqueItems(item => ToArgb(item.Color));
-    }
-
-    [Fact]
-    public void GenerateUniqueColorFallsBackAfterPreferredColorsAreExhausted()
+    public void GenerateUniqueColorFallsBackAfterFixedColorsAreExhausted()
     {
         var service = new ChartColorService();
         var items = new List<IColoredItem>();
 
-        for (var i = 0; i < 12; i++)
+        for (var i = 0; i < FixedColors.Length + 1; i++)
         {
             var color = service.GenerateUniqueColor(items);
             items.Add(new TestColoredItem(color));
         }
 
-        items.Should().OnlyHaveUniqueItems(item => ToArgb(item.Color));
-        items[11].Color.Should().NotBe(default(Color));
+        items[FixedColors.Length].Color.Should().NotBe(default(Color));
+        FixedColors.Should().NotContain(items[FixedColors.Length].Color);
     }
 
     private sealed class TestColoredItem : IColoredItem
